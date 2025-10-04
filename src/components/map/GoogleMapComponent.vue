@@ -91,11 +91,11 @@ function calibrate() {
         position: { lat: marker.latitude, lng: marker.longitude },
         icon: {
           path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-          fillColor: 'blue',
+          fillColor: '#0078ff',
           fillOpacity: 1,
-          strokeWeight: 2,
+          strokeWeight: 1,
           rotation: marker.angle,
-          scale: 10,
+          scale: 8,
         },
       })
     })
