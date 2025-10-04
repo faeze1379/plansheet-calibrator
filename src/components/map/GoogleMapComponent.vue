@@ -1,22 +1,20 @@
 <template>
   <div>
-    <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between q-pa-md">
       <b class="text-h6" v-if="planSheet">Plan Sheet: {{ planSheet.name }}</b>
       <q-btn
         class="q-mb-md"
         label="Calibrate"
         color="orange"
         no-caps
-        rounded
         @click="calibrate"
       />
     </div>
     <div
       ref="mapElement"
       :style="{
-        width: `${width}px`,
-        height: `${height}px`,
-        maxWidth: '100%',
+        width: `100vw`,
+        height: `90vh`,
       }"
     />
   </div>
@@ -53,14 +51,6 @@ const props = defineProps({
       lat: 36.2972,
       lng: 59.6067,
     }),
-  },
-  width: {
-    type: Number,
-    default: 375,
-  },
-  height: {
-    type: Number,
-    default: 400,
   },
 })
 
