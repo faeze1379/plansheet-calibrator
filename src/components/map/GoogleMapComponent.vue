@@ -1,12 +1,25 @@
 <template>
-  <div
-    ref="mapElement"
-    :style="{
-      width: `${width}px`,
-      height: `${height}px`,
-      maxWidth: '100%',
-    }"
-  />
+  <div>
+    <div class="flex items-center justify-between">
+      <b class="text-h6" v-if="planSheet">Plan Sheet: {{ planSheet.name }}</b>
+      <q-btn
+        class="q-mb-md"
+        label="Calibrate"
+        color="orange"
+        no-caps
+        rounded
+        @click="calibrate"
+      />
+    </div>
+    <div
+      ref="mapElement"
+      :style="{
+        width: `${width}px`,
+        height: `${height}px`,
+        maxWidth: '100%',
+      }"
+    />
+  </div>
 </template>
 
 <script setup>
@@ -51,9 +64,12 @@ const props = defineProps({
   },
 })
 
-async function getOverlayBounds(planSheet) {
+const planSheet = ref(null)
+const markersShown = ref([])
+
+async function getOverlayBounds(planSheetData) {
   const { topLeft, topRight, bottomRight, bottomLeft } =
-    planSheet.mapOverLay.planSheetBound
+    planSheetData.mapOverLay.planSheetBound
 
   const lats = [
     topLeft.latitude,
@@ -73,45 +89,39 @@ async function getOverlayBounds(planSheet) {
   return { sw, ne }
 }
 
-onMounted(async () => {
+function calibrate() {
+  console.log('calibrate', planSheet.value)
+
+  markersShown.value = props.markers.filter(
+    marker => marker.currentLayout == planSheet.value.uniqueId
+  )
+}
+
+async function loadMap() {
   setOptions({
     key: GOOGLE_MAP_API_KEY,
   })
 
   if (props.planSheets.length > 0) {
-    const planSheet = props.planSheets.find(
+    planSheet.value = props.planSheets.find(
       plan => plan.mapOverLay != null && plan.url
     )
-    const { sw, ne } = await getOverlayBounds(planSheet)
-
+    const { sw, ne } = await getOverlayBounds(planSheet.value)
     const { Map } = await importLibrary('maps')
+
     map = new Map(mapElement.value, {
       center: sw,
       zoom: props.zoom,
     })
 
     const bounds = new google.maps.LatLngBounds(sw, ne)
+    const overlay = new google.maps.GroundOverlay(planSheet.value.url, bounds)
 
-    const overlay = new google.maps.GroundOverlay(planSheet.url, bounds)
     overlay.setMap(map)
 
     map.fitBounds(bounds, { padding: 0 })
   }
+}
 
-  // if (props.markers.length > 0)
-  //   props.markers.forEach(marker => {
-  //     new google.maps.Marker({
-  //       map,
-  //       position: { lat: marker.lat, lng: marker.lng },
-  //       icon: {
-  //         path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-  //         fillColor: 'blue',
-  //         fillOpacity: 0.6,
-  //         strokeWeight: 0,
-  //         rotation: marker.heading,
-  //         scale: 10,
-  //       },
-  //     })
-  //   })
-})
+onMounted(async () => await loadMap())
 </script>
