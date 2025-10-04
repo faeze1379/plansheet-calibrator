@@ -80,11 +80,27 @@ async function getOverlayBounds(planSheetData) {
 }
 
 function calibrate() {
-  console.log('calibrate', planSheet.value)
-
   markersShown.value = props.markers.filter(
     marker => marker.currentLayout == planSheet.value.uniqueId
   )
+
+  if (markersShown.value.length > 0)
+    markersShown.value.forEach(marker => {
+      new google.maps.Marker({
+        map,
+        position: { lat: marker.latitude, lng: marker.longitude },
+        icon: {
+          path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+          fillColor: 'blue',
+          fillOpacity: 1,
+          strokeWeight: 2,
+          rotation: marker.angle,
+          scale: 10,
+        },
+      })
+    })
+
+  console.log('markersShown', markersShown.value)
 }
 
 async function loadMap() {
