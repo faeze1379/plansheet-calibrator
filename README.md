@@ -25,3 +25,7 @@ quasar build
 ### Customize the configuration
 
 See [Configuring quasar.config.js](https://v2.quasar.dev/quasar-cli-webpack/quasar-config-js).
+
+## sources
+
+https://developers.google.com/maps/documentation/javascript/symbols, https://www.npmjs.com/package/@googlemaps/js-api-loader

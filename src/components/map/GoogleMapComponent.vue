@@ -22,6 +22,10 @@ defineOptions({
 })
 
 const props = defineProps({
+  planSheets: {
+    type: Array,
+    default: () => [],
+  },
   markers: {
     type: Array,
     default: () => [],
@@ -47,31 +51,54 @@ const props = defineProps({
   },
 })
 
+async function getOverlayBounds(planSheet) {
+  const { topLeft, topRight, bottomRight, bottomLeft } = planSheet.overlay
+
+  const lats = [topLeft.lat, topRight.lat, bottomRight.lat, bottomLeft.lat]
+  const lngs = [topLeft.lng, topRight.lng, bottomRight.lng, bottomLeft.lng]
+  const sw = { lat: Math.min(...lats), lng: Math.min(...lngs) }
+  const ne = { lat: Math.max(...lats), lng: Math.max(...lngs) }
+
+  return { sw, ne }
+}
+
 onMounted(async () => {
   setOptions({
     key: GOOGLE_MAP_API_KEY,
   })
 
-  const { Map } = await importLibrary('maps')
-  map = new Map(mapElement.value, {
-    center: props.center,
-    zoom: props.zoom,
-  })
+  if (props.planSheets.length > 0) {
+    const planSheet = props.planSheets.find(plan => plan.overlay && plan.url)
+    const { sw, ne } = await getOverlayBounds(planSheet)
 
-  if (props.markers.length > 0)
-    props.markers.forEach(marker => {
-      new google.maps.Marker({
-        map,
-        position: { lat: marker.lat, lng: marker.lng },
-        icon: {
-          path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-          fillColor: 'blue',
-          fillOpacity: 0.6,
-          strokeWeight: 0,
-          rotation: marker.heading,
-          scale: 10,
-        },
-      })
+    const { Map } = await importLibrary('maps')
+    map = new Map(mapElement.value, {
+      center: sw,
+      zoom: props.zoom,
     })
+
+    const bounds = new google.maps.LatLngBounds(sw, ne)
+
+    const overlay = new google.maps.GroundOverlay(planSheet.url, bounds)
+    overlay.setMap(map)
+
+    map.fitBounds(bounds, { padding: 0 })
+  }
+
+  // if (props.markers.length > 0)
+  //   props.markers.forEach(marker => {
+  //     new google.maps.Marker({
+  //       map,
+  //       position: { lat: marker.lat, lng: marker.lng },
+  //       icon: {
+  //         path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+  //         fillColor: 'blue',
+  //         fillOpacity: 0.6,
+  //         strokeWeight: 0,
+  //         rotation: marker.heading,
+  //         scale: 10,
+  //       },
+  //     })
+  //   })
 })
 </script>

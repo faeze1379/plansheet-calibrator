@@ -1,0 +1,13 @@
+[
+  {
+    "id": "plan-sheet-1",
+    "name": "Plan Sheet 1",
+    "url": "https://rahpoyancompany.ir/wp-content/uploads/2021/10/Maskoni-4Tabaghe-8-Vahedi-Memari-www.farsicad.com-Model.jpg",
+    "overlay": {
+      "topLeft": { "lat": 36.3001, "lng": 59.6002 },
+      "topRight": { "lat": 36.30005, "lng": 59.6049 },
+      "bottomRight": { "lat": 36.297, "lng": 59.6048 },
+      "bottomLeft": { "lat": 36.2971, "lng": 59.60015 }
+    }
+  }
+]

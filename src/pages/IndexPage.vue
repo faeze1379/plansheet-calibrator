@@ -1,23 +1,21 @@
 <template>
   <q-page class="flex flex-center">
     <div class="column items-center q-gutter-md">
-      <h4>Google Map</h4>
-      <google-map-component :markers="markers" />
+      <google-map-component :markers="markers" :planSheets="planSheets" />
     </div>
   </q-page>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import GoogleMapComponent from 'src/components/map/GoogleMapComponent.vue'
+import markersData from 'src/fake-data/markers.json'
+import planSheetsData from 'src/fake-data/plan-sheets.json'
 
 defineOptions({
   name: 'IndexPage',
 })
 
-const markers = [
-  { lat: 36.2972, lng: 59.6067, heading: 0 },
-  { lat: 36.3035, lng: 59.582, heading: 90 },
-  { lat: 36.286, lng: 59.6157, heading: 180 },
-  { lat: 36.31, lng: 59.63, heading: 270 },
-]
+const planSheets = ref(planSheetsData)
+const markers = ref(markersData)
 </script>
