@@ -55,7 +55,6 @@ const props = defineProps({
 })
 
 const planSheet = ref(null)
-const markersShown = ref([])
 
 async function getOverlayBounds(planSheetData) {
   const { topLeft, topRight, bottomRight, bottomLeft } =
@@ -79,28 +78,29 @@ async function getOverlayBounds(planSheetData) {
   return { sw, ne }
 }
 
+function loadMarkers(markers) {
+  markers.forEach(marker => {
+    new google.maps.Marker({
+      map,
+      position: { lat: marker.latitude, lng: marker.longitude },
+      icon: {
+        path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+        fillColor: '#0078ff',
+        fillOpacity: 1,
+        strokeWeight: 1,
+        rotation: marker.angle || 0,
+        scale: 6,
+      },
+    })
+  })
+}
+
 function calibrate() {
-  markersShown.value = props.markers.filter(
+  const selectedMarkers = props.markers.filter(
     marker => marker.currentLayout == planSheet.value.uniqueId
   )
 
-  if (markersShown.value.length > 0)
-    markersShown.value.forEach(marker => {
-      new google.maps.Marker({
-        map,
-        position: { lat: marker.latitude, lng: marker.longitude },
-        icon: {
-          path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-          fillColor: '#0078ff',
-          fillOpacity: 1,
-          strokeWeight: 1,
-          rotation: marker.angle,
-          scale: 8,
-        },
-      })
-    })
-
-  console.log('markersShown', markersShown.value)
+  loadMarkers(selectedMarkers)
 }
 
 async function loadMap() {
@@ -129,5 +129,8 @@ async function loadMap() {
   }
 }
 
-onMounted(async () => await loadMap())
+onMounted(async () => {
+  await loadMap()
+  await loadMarkers(props.markers)
+})
 </script>
