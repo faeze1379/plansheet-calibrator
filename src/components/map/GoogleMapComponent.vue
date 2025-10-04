@@ -52,10 +52,21 @@ const props = defineProps({
 })
 
 async function getOverlayBounds(planSheet) {
-  const { topLeft, topRight, bottomRight, bottomLeft } = planSheet.overlay
+  const { topLeft, topRight, bottomRight, bottomLeft } =
+    planSheet.mapOverLay.planSheetBound
 
-  const lats = [topLeft.lat, topRight.lat, bottomRight.lat, bottomLeft.lat]
-  const lngs = [topLeft.lng, topRight.lng, bottomRight.lng, bottomLeft.lng]
+  const lats = [
+    topLeft.latitude,
+    topRight.latitude,
+    bottomRight.latitude,
+    bottomLeft.latitude,
+  ]
+  const lngs = [
+    topLeft.longitude,
+    topRight.longitude,
+    bottomRight.longitude,
+    bottomLeft.longitude,
+  ]
   const sw = { lat: Math.min(...lats), lng: Math.min(...lngs) }
   const ne = { lat: Math.max(...lats), lng: Math.max(...lngs) }
 
@@ -68,7 +79,9 @@ onMounted(async () => {
   })
 
   if (props.planSheets.length > 0) {
-    const planSheet = props.planSheets.find(plan => plan.overlay && plan.url)
+    const planSheet = props.planSheets.find(
+      plan => plan.mapOverLay != null && plan.url
+    )
     const { sw, ne } = await getOverlayBounds(planSheet)
 
     const { Map } = await importLibrary('maps')
